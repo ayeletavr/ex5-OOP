@@ -1,0 +1,79 @@
+ayeletavr
+
+ayelet avraham
+
+
+=============================
+=      File description     =
+=============================
+fileprocessing package:
+DirectoryProcessor.java - This class runs the whole program of file processing.
+FileArrayFactory.java - A factory to create arrays of the given files.
+
+filters package:
+Filter.java - This class filters files.
+BytesConverter.java - This helper class converts a given number of bytes to kb.
+FilterAll.java - "all" filter - In this filter, all files are matched.
+FilterBetween.java - "between" filter - Filters all files that are between (inclusive) the given numbers (in k-bytes).
+FilterContains.java - "contains" filter - checks if file name contains a specific value, and filters according to this.
+FilterExecutable.java - "executable" filter - Filters all files that have execution permission.
+FilterFile.java - "file" filter - filters all files that file's name is equal to the given arg.
+FilterGreaterThan.java - "greater_than" filter - Filters files that are strictly greater than the given number of k-bytes.
+FilterHidden.java - "hidden" filter - Filters all hidden files from file array.
+FilterPrefix.java - "prefix" filter - Filters by file's name prefix.
+FilterSmallerThan.java - "smaller_than" filter - Filters files that are strictly less than the given number of k-bytes.
+FilterSuffix.java - "suffix" filter - Filters by suffix.
+FilterWritable.java - "writable" filter - Filters all files that have writing permission.
+FilterInterface.java - An interface of all filters.
+
+order package:
+Comparators.java - This class holds classes of comparators that will help us to sort files.
+ComparatorsFactory.java - A factory for comparators.
+MergeSort.java - merge sort algorithm for sorting the file array.
+
+commandfile package:
+CommandFileProcessor.java - This class reads a command file and processes it to a valid Array of strings.
+Section.java - This class represent a section of commands - filter and order.
+SectionFactory.java - A factory that creates sections.
+SectionsArrayFactory.java - A factory that creates an array of sections, from arrays of strings, possibly containing a few sections.
+
+exceptions package:
+MissingFilterSubSectionException.java - An exception that raises when a filter line is missing.
+MissingOrderSubSectionException.java - An exception that raises when an order line is missing.
+
+=============================
+=          Design           =
+=============================
+The basic Idea: Working with arrays.
+The sourceDir is directly processed into an ArrayList of files that the program (processor) can filter and order.
+The commandFile is directly processed into an ArrayList of String (I chose to use a Scanner to read the raw command file).
+The Strings arrayList is processed in the command line processor - our goal is to eventually create an array of sections.
+In order to achieve it, the processor has to check validity of command file (and throw exceptions or warnings if needed),
+to recognize each section and create is, and then make an array of sections.
+As we have a Section Array with filter and orders commands, and we have the ArrayList of files that we'd like to filter and order,
+we can integrate between them in the main DirectoryProcessor and run the program :)
+
+Looking back on the project, I could (and probably should) use predicates to reduce the amount of classes
+(such as the filters that looks alike, for example).
+
+=============================
+=  Implementation details   =
+=============================
+
+=============================
+=    Answers to questions   =
+=============================
+
+1) Exceptions hierarchy:
+Handling with IO exceptions: I catch IO exceptions in the main method that gets the sourceDir and command file.
+Handling with Missing FILTER exceptions and missing ORDER exceptions:
+In commandFileProcessor, I have a method named verifyValidityOfArray that checks that sections are in a valid structure
+with FILTER and ORDER commands. I used the fact that a valid section length is 3 or 4, and the max difference from the
+ORDER index to FILTER index is 2. So, If I'll have a pointer to the old filter and the current filter, and the difference
+between their indexes is larger than 4, I'll throw a missing FILTER exception, and if the difference from the old filter to
+the current order is larger than 2, I'll throw a missing ORDER exception.
+As a helper method, before I checked the described above, I checked my Strings command line array for duplications in FILTER
+and ORDER lines, and flagged them so I can ake sure I check the FILTER and ORDER lines in the right indexes.
+
+2) Sorting files: My sorting algorithm is MergeSort, as we learned in DAST.
+Of course I had to use comparators in order to compare between two files.
